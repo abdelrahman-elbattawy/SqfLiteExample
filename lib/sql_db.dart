@@ -18,13 +18,17 @@ final class SqlDb {
   }
 
   _onCreate(Database db, int version) async {
-    await db.execute('''
+    Batch batch = db.batch();
+
+    batch.execute('''
     CREATE TABLE "notes" (
       "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
       "title" TEXT NOT NULL,
       "note" TEXT NOT NULL
       )
   ''');
+
+    await batch.commit();
   }
 
   selectData(String sql) async {
