@@ -7,21 +7,51 @@ final class SqlDb {
   Future<Database?> get db async =>
       (_db == null) ? _db = await intialDB() : _db;
 
-  Future<Database> intialDB() async {
+  intialDB() async {
     String databasePath = await getDatabasesPath();
     String fullPath = join(databasePath, 'notesDb.db');
 
-    Database myDb = await openDatabase(fullPath, onCreate: onCreate);
+    Database myDb =
+        await openDatabase(fullPath, onCreate: _onCreate, version: 1);
 
     return myDb;
   }
 
-  Future<void> onCreate(Database db, int version) async {
+  _onCreate(Database db, int version) async {
     await db.execute('''
     CREATE TABLE "notes" (
-      id INTEGER AUTOINCREMENT NOT NULL PRIMARY KEY,
-      notes TEXT NOT NULL
+      "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+      "title" TEXT NOT NULL,
+      "note" TEXT NOT NULL
       )
   ''');
+  }
+
+  selectData(String sql) async {
+    Database? myDb = await db;
+    List<Map> response = await myDb!.rawQuery(sql);
+
+    return response;
+  }
+
+  insertData(String sql) async {
+    Database? myDb = await db;
+    int response = await myDb!.rawInsert(sql);
+
+    return response;
+  }
+
+  updateData(String sql) async {
+    Database? myDb = await db;
+    int response = await myDb!.rawUpdate(sql);
+
+    return response;
+  }
+
+  deleteData(String sql) async {
+    Database? myDb = await db;
+    int response = await myDb!.rawDelete(sql);
+
+    return response;
   }
 }
